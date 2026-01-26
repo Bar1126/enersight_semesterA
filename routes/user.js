@@ -158,9 +158,8 @@ router.post("/update", isAuthenticated, (req, res) => {
   });
 });
 
-/* GET ALL USERS */
+//Get all users
 router.get("/", (req, res) => {
-
   const sql = `
     SELECT
       UserName as username,
@@ -169,27 +168,16 @@ router.get("/", (req, res) => {
   `;
 
   db.query(sql, (err, results) => {
-
     if (err) {
-
       console.error("GET USERS ERROR:", err);
 
       return res.status(500).json({
-        message: err.message
+        message: err.message,
       });
     }
 
     res.json(results);
-
   });
-
 });
-
-
-
-
-
-
-
 
 module.exports = router;

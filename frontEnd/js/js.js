@@ -132,19 +132,30 @@ $("loginBtn").onclick = async () => {
   const password = $("loginPass").value.trim();
 
   if (!username || !password) {
-    return alert("Fill all fields");
+    return showMessage("Error ❌", "Please fill all fields");
   }
 
   try {
-    const data = await apiPost("/users/login", { username, password });
+    const data = await apiPost("/users/login", {
+      username,
+      password,
+    });
 
     showApp(data.username || username);
 
     loadAll();
+
+    // Clear fields
+    $("loginUser").value = "";
+    $("loginPass").value = "";
   } catch (err) {
-    alert("Login failed");
+    showMessage(
+      "Login Failed ❌",
+      err.message || "Invalid username or password",
+    );
   }
 };
+
 
 /* =====================
    SWITCH LOGIN / REGISTER
