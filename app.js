@@ -15,7 +15,7 @@ app.use(
   session({
     secret: 'your_secret_key',
     resave: false, //if there wasn't a change don't save
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: { secure: false, maxAge: 1000 * 60 * 60 }, // For HTTPS use true
   }),
 );

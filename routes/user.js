@@ -106,6 +106,13 @@ const isAuthenticated = (req, res, next) => {
   }
 };
 
+// Get current logged-in user
+router.get("/me", isAuthenticated, (req, res) => {
+  res.json({
+    username: req.session.user.username,
+  });
+});
+
 router.post("/update", isAuthenticated, (req, res) => {
   const { password, email } = req.body;
   const username = req.session.user.username;
@@ -114,7 +121,7 @@ router.post("/update", isAuthenticated, (req, res) => {
 
   db.query(selectQuery, [username], (err, results) => {
     if (err) {
-      return res.status(500).send("DB error");
+      return res.status(500).send("DB error ", err);
     }
 
     if (results.length === 0) {
@@ -155,6 +162,17 @@ router.post("/update", isAuthenticated, (req, res) => {
         });
       });
     });
+  });
+});
+
+router.delete("/delete/:username", isAuthenticated, (req, res) => {
+  const { username } = req.params;
+  const query = "DELETE FROM users WHERE username = ?";
+  db.query(query, [username], (err, results) => {
+    if (err || !results) {
+      return res.status(400).send("DB error. Unable to delete");
+    }
+    return res.status(200).send("user deleted successfully");
   });
 });
 

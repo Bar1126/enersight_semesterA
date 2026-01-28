@@ -42,6 +42,7 @@ const checkIfExist = (req, res, next) => {
 router.post("/add", (req, res) => {
   //Get parameters for new point from user
   const { power, kwh, height } = req.body;
+  console.log("power, kwh, height: ", power, kwh, height);
 
   //Construct the insert query according to the input parameters
   const insertQuery =
@@ -50,6 +51,7 @@ router.post("/add", (req, res) => {
   //Execute the query
   db.query(insertQuery, [power, kwh, height], (err, results) => {
     //Check if the query secceeded.
+    console.log("query results: ", results, "err: ", err)
     if (err || results.length === 0) {
       return res.status(500).send("error adding wind turbine: ", err.cause);
     }
@@ -97,6 +99,17 @@ router.delete("/delete/:id", checkIfExist, (req, res) => {
       return res.status(400).send("DB error. Unable to delete");
     }
     return res.status(200).send("wind turbine deleted successfully");
+  });
+});
+
+//Get all wind turbines from the DB
+router.get("/", (req, res) => {
+  const query = "SELECT * FROM windturbines";
+  db.query(query, (err, results) => {
+    if (err || !results) {
+      return res.status(400).send("DB error. Unable to get all");
+    }
+    res.json(results);
   });
 });
 

@@ -100,4 +100,14 @@ router.delete("/delete/:id", checkIfExist, (req, res) => {
   });
 });
 
+router.get("/", (req, res) => {
+  const query = "SELECT * FROM solarpanels";
+  db.query(query, (err, results) => {
+    if (err || !results) {
+      return res.status(400).send("DB error. Unable to get all");
+    }
+    res.json(results);
+  });
+});
+
 module.exports = router;
