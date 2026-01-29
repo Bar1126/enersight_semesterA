@@ -134,7 +134,28 @@ window.addEventListener("DOMContentLoaded", () => {
     const email = $("updateEmail").value.trim();
     const password = $("updatePassword").value.trim();
 
+    console.log(password); ////////////TODO
+
+    // Password: 3-8 chars, letters+numbers, at least one of each
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{3,8}$/;
+
+    if (password && !passwordRegex.test(password)) {
+      $("updateUserPopup").classList.add("hidden");
+      return showMessage(
+        "Error ❌",
+        "Password must be 3-8 characters, contain letters and numbers",
+      );
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (email && !emailRegex.test(email)) {
+      $("updateUserPopup").classList.add("hidden");
+      return showMessage("Error ❌", "Please enter a valid email address");
+    }
+
     if (!email && !password) {
+      $("updateUserPopup").classList.add("hidden");
       return showMessage("Error ❌", "Enter email or password");
     }
 

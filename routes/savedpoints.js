@@ -69,22 +69,11 @@ router.post("/add", (req, res) => {
   //Execute the query
   db.query(
     insertQuery,
-    [
-      longitude,
-      latitude,
-      startDate,
-      endDate,
-      0,
-      0,
-      0,
-      0,
-      1,
-      "year",
-    ], //hard coded for semester A, will be changed later
+    [longitude, latitude, startDate, endDate, 0, 0, 0, 0, 1, "year"], //hard coded for semester A, will be changed later
     (err, results) => {
       //Check if the query secceeded.
       if (err || results.length === 0) {
-        return res.status(500).send( err.message);
+        return res.status(500).send(err.message);
       }
       //Query seccedded.
       res.status(201).send("point added!");
@@ -181,7 +170,6 @@ router.delete("/delete/:id", checkIfExist, (req, res) => {
 
 /* GET ALL SAVED POINTS */
 router.get("/", (req, res) => {
-
   const sql = `
     SELECT
       ID as id,
@@ -194,22 +182,16 @@ router.get("/", (req, res) => {
   `;
 
   db.query(sql, (err, results) => {
-
     if (err) {
-
       console.error("GET POINTS ERROR:", err);
 
       return res.status(500).json({
-        message: "Failed to load points"
+        message: "Failed to load points",
       });
     }
 
     res.json(results);
-
   });
-
 });
-
-
 
 module.exports = router;

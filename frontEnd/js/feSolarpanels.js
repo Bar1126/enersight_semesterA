@@ -10,6 +10,16 @@ $("addSolar").onclick = async () => {
     return showMessage("Error ❌", "Please fill all fields");
   }
 
+  const pw = Number(power);
+  const kwh1 = Number(kwh);
+  const len = Number(length)
+   const wid = Number(width);
+
+  if (pw < 0 || kwh1 < 0 || len<0 || wid<0 ) {
+    return showMessage("Error ❌", "Values must be > 0");
+  }
+
+
   try {
     await apiPost("/solar/add", {
       power,
@@ -19,6 +29,7 @@ $("addSolar").onclick = async () => {
     });
 
     showMessage("Success ✅", "Solar panel added successfully");
+    loadSolarPanels();
 
     // Clear inputs
     $("sPower").value = "";

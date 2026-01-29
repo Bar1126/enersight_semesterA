@@ -115,8 +115,8 @@ router.get("/me", isAuthenticated, (req, res) => {
 
 router.post("/update", isAuthenticated, (req, res) => {
   const { password, email } = req.body;
+  console.log(password); ////////////TODO
   const username = req.session.user.username;
-  console.log(username);
   const selectQuery = "SELECT * FROM users WHERE username = ?";
 
   db.query(selectQuery, [username], (err, results) => {
@@ -152,7 +152,7 @@ router.post("/update", isAuthenticated, (req, res) => {
           return res.status(500).send("Error hashing password");
         }
         const updateQuery =
-          "UPDATE users SET password = ?, email = ? WHERE username = ?";
+          "UPDATE users SET Password = ?, email = ? WHERE username = ?";
 
         db.query(updateQuery, [hashedPassword, newEmail, username], (err) => {
           if (err) {

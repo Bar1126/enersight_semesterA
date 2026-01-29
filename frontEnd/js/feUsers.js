@@ -20,6 +20,7 @@ async function checkLogin() {
 ===================== */
 
 $("loginBtn").onclick = async () => {
+  console.log("inside login fe");
   const username = $("loginUser").value.trim();
   const password = $("loginPass").value.trim();
 
@@ -74,6 +75,12 @@ $("regBtn").onclick = async () => {
   // Password: 3-8 chars, letters+numbers, at least one of each
   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{3,8}$/;
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!emailRegex.test(m)) {
+    return showMessage("Error ❌", "Please enter a valid email address");
+  }
+
   if (!usernameRegex.test(u)) {
     return showMessage(
       "Error ❌",
@@ -102,7 +109,7 @@ $("regBtn").onclick = async () => {
   } catch (err) {
     showMessage("Register Failed ❌", err.message);
   }
-};;
+};
 
 /* =====================
    LOGOUT

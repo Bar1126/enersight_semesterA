@@ -2,11 +2,19 @@
 
 $("addWind").onclick = async () => {
   const power = $("wPower").value.trim();
-  const kwh = $("wEnergy").value.trim(); 
+  const kwh = $("wEnergy").value.trim();
   const height = $("wHeight").value.trim();
 
   if (!power || !kwh || !height) {
     return showMessage("Error ❌", "Please fill all fields");
+  }
+
+  const pw = Number(power);
+  const kwh1 = Number(kwh);
+  const h = Number(height);
+
+  if (pw < 0 || kwh1 < 0 || h < 0) {
+    return showMessage("Error ❌", "Values must be > 0");
   }
 
   try {
@@ -17,6 +25,7 @@ $("addWind").onclick = async () => {
     });
 
     showMessage("Success ✅", "Wind turbine added successfully");
+    loadWindTurbines();
 
     // Clear inputs
     $("wPower").value = "";
@@ -26,7 +35,6 @@ $("addWind").onclick = async () => {
     showMessage("Failed ❌", err.message || "Could not add wind turbine");
   }
 };
-
 
 /* =====================
    WIND TURBINES TABLE
