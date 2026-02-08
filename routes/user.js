@@ -4,13 +4,16 @@ const db = require("../databases/db");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
 
+//A middleware to check if the user exists in the DB
 const checkIfExist = (req, res, next) => {
   const { username, password } = req.body;
 
+  //Didn't get username or password
   if (!username || !password) {
     return res.status(400).send("username and password are required");
   }
 
+  //Build the query to get the user from the DB
   const query = "SELECT * FROM users WHERE username = ?";
 
   db.query(query, [username], (err, results) => {
@@ -19,9 +22,12 @@ const checkIfExist = (req, res, next) => {
       return res.status(500).send("Server error1");
     }
 
+    //No user was found with that username
     if (results.length === 0) {
       return res.status(401).send("invalid username or password");
     }
+
+    //The username esixts. Checking if the hashed password corresponds to the input one
     const hashedPassword = results[0].Password;
     bcrypt.compare(password, hashedPassword, (err, isMatch) => {
       if (err) {
@@ -29,10 +35,12 @@ const checkIfExist = (req, res, next) => {
         return res.status(500).send("Server error2");
       }
 
+      //password does not belong to username
       if (!isMatch) {
         return res.status(401).send("invalid username or password");
       }
 
+      //password and username match. Saving the username in the current session
       req.session.user = {
         username: results[0].UserName,
       };
@@ -42,6 +50,7 @@ const checkIfExist = (req, res, next) => {
   });
 };
 
+//Login route
 router.post("/login", checkIfExist, (req, res) => {
   res.cookie("username", req.session.user.username, {
     maxAge: 36000000,
@@ -50,8 +59,11 @@ router.post("/login", checkIfExist, (req, res) => {
   return res.send("login successfull");
 });
 
+//Register route
 router.post("/register", (req, res) => {
   const { username, password, email } = req.body;
+
+  //Check if the username already exists
   const query = "SELECT * FROM users WHERE username = ?";
   db.query(query, [username], (err, results) => {
     if (err) {
@@ -63,6 +75,7 @@ router.post("/register", (req, res) => {
         .send("username alredy exists. choose a different username");
     }
     try {
+      //User doesn't exist. Hashing the password and adding it to the DB
       bcrypt.genSalt(10, (err, salt) => {
         if (err) throw err;
         bcrypt.hash(password, salt, (err, hashedPassword) => {
@@ -89,7 +102,9 @@ router.post("/register", (req, res) => {
   });
 });
 
+//Logout route
 router.post("/logout", (req, res) => {
+  //Destroy the current session
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).send("Error terminating session.");
@@ -98,6 +113,7 @@ router.post("/logout", (req, res) => {
   });
 });
 
+//A middleware to theck if the user is logged in
 const isAuthenticated = (req, res, next) => {
   if (req.session.user) {
     next(); // User is authorized, continue
@@ -113,10 +129,14 @@ router.get("/me", isAuthenticated, (req, res) => {
   });
 });
 
+//Update user information
 router.post("/update", isAuthenticated, (req, res) => {
   const { password, email } = req.body;
-  console.log(password); ////////////TODO
+
+  //Get the current signed in user
   const username = req.session.user.username;
+
+  //Find the user in the DB
   const selectQuery = "SELECT * FROM users WHERE username = ?";
 
   db.query(selectQuery, [username], (err, results) => {
@@ -129,6 +149,8 @@ router.post("/update", isAuthenticated, (req, res) => {
     }
 
     const currentUser = results[0];
+
+    //Update the email if applicable
     const newEmail = email ? email : currentUser.Email;
 
     if (!password) {
@@ -142,6 +164,7 @@ router.post("/update", isAuthenticated, (req, res) => {
       });
     }
 
+    //Update the password if applicable
     bcrypt.genSalt(10, (err, salt) => {
       if (err) {
         return res.status(500).send("Error generating salt");
@@ -165,6 +188,7 @@ router.post("/update", isAuthenticated, (req, res) => {
   });
 });
 
+//Delete route
 router.delete("/delete/:username", isAuthenticated, (req, res) => {
   const { username } = req.params;
   const query = "DELETE FROM users WHERE username = ?";

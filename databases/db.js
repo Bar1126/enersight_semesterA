@@ -1,4 +1,4 @@
-const mysql = require('mysql2');
+const mysql = require("mysql2");
 
 // ! the following  creates and uses one database connection for all queries. This single connection is established the first time getDbConnection is called and is then reused for subsequent database operations across your application
 
@@ -20,6 +20,3 @@ db.connect((err) => {
 });
 
 module.exports = db;
-
-
-
